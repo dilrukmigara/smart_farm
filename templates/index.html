@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SmartFarm — Security Monitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/dashboard.css">
+</head>
+<body>
+
+  <!-- Scanline overlay -->
+  <div class="scanlines"></div>
+
+  <!-- Background grid -->
+  <div class="grid-bg"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo">
+        <span class="logo-icon">⬡</span>
+        <div>
+          <div class="logo-title">SMART<span class="accent">FARM</span></div>
+          <div class="logo-sub">SECURITY MONITOR v2.0</div>
+        </div>
+      </div>
+    </div>
+    <div class="header-center">
+      <div class="live-indicator">
+        <span class="pulse-dot" id="liveDot"></span>
+        <span id="liveLabel">CONNECTING...</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="sys-clock" id="sysClock">--:--:--</div>
+      <div class="sys-date" id="sysDate">---- -- --</div>
+    </div>
+  </header>
+
+  <!-- Main layout -->
+  <main class="dashboard">
+
+    <!-- Left: Stats panel -->
+    <aside class="stats-panel">
+
+      <div class="panel-label">SYSTEM STATUS</div>
+
+      <div class="stat-block" id="alertBlock">
+        <div class="stat-icon" id="alertIcon">●</div>
+        <div class="stat-info">
+          <div class="stat-value" id="statusText">WAITING</div>
+          <div class="stat-label">Detection Status</div>
+        </div>
+      </div>
+
+      <div class="stat-block" id="motionBlock">
+        <div class="stat-icon" id="motionIcon">●</div>
+        <div class="stat-info">
+          <div class="stat-value" id="motionText">NO MOTION</div>
+          <div class="stat-label" id="motionLabel">PIR Sensor</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="panel-label">ANALYTICS</div>
+
+      <div class="metric-row">
+        <div class="metric">
+          <div class="metric-val" id="totalFrames">0</div>
+          <div class="metric-label">Frames<br>Processed</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val accent" id="detectionCount">0</div>
+          <div class="metric-label">Human<br>Detections</div>
+        </div>
+      </div>
+
+      <div class="metric-row">
+        <div class="metric">
+          <div class="metric-val" id="detectionRate">0%</div>
+          <div class="metric-label">Detection<br>Rate</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val" id="alertStatus">—</div>
+          <div class="metric-label">Telegram<br>Alert</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="panel-label">LAST UPDATE</div>
+      <div class="timestamp-box" id="lastUpdated">—</div>
+
+      <div class="divider"></div>
+      <div class="panel-label">CAMERA</div>
+      <div class="camera-info">
+        <div class="cam-row"><span class="cam-key">Device</span><span class="cam-val">ESP32-CAM</span></div>
+        <div class="cam-row"><span class="cam-key">Model</span><span class="cam-val">YOLOv8n</span></div>
+        <div class="cam-row"><span class="cam-key">Endpoint</span><span class="cam-val">/upload</span></div>
+        <div class="cam-row"><span class="cam-key">Motion</span><span class="cam-val">/motion</span></div>
+        <div class="cam-row"><span class="cam-key">Port</span><span class="cam-val">8080</span></div>
+      </div>
+
+    </aside>
+
+    <!-- Center: Camera feeds -->
+    <section class="feeds-section">
+
+      <div class="feeds-grid">
+
+        <div class="feed-card" id="feedOriginal">
+          <div class="feed-header">
+            <span class="feed-tag">CAM-01</span>
+            <span class="feed-title">ORIGINAL FEED</span>
+            <span class="feed-status" id="origStatus">LIVE</span>
+          </div>
+          <div class="feed-frame">
+            <img id="imgOriginal" src="" alt="Awaiting feed..." />
+            <div class="feed-overlay" id="overlayOrig">
+              <div class="no-signal">
+                <div class="ns-icon">⬡</div>
+                <div>AWAITING SIGNAL</div>
+              </div>
+            </div>
+          </div>
+          <div class="feed-footer">
+            <span id="origPath">—</span>
+          </div>
+        </div>
+
+        <div class="feed-card" id="feedResult">
+          <div class="feed-header">
+            <span class="feed-tag">AI-01</span>
+            <span class="feed-title">DETECTION OVERLAY</span>
+            <span class="feed-status" id="resStatus">LIVE</span>
+          </div>
+          <div class="feed-frame">
+            <img id="imgResult" src="" alt="Awaiting detection..." />
+            <div class="feed-overlay" id="overlayRes">
+              <div class="no-signal">
+                <div class="ns-icon">⬡</div>
+                <div>AWAITING SIGNAL</div>
+              </div>
+            </div>
+          </div>
+          <div class="feed-footer">
+            <span id="resPath">—</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Alert banner -->
+      <div class="alert-banner" id="alertBanner">
+        <span class="alert-icon">⚠</span>
+        <span id="alertMsg">SYSTEM READY — MONITORING ACTIVE</span>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast">
+    <span class="toast-icon">🔔</span>
+    <span id="toastMsg"></span>
+  </div>
+
+  <script src="/static/js/dashboard.js"></script>
+</body>
+</html>
