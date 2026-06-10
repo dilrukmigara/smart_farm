@@ -105,6 +105,19 @@ function applyStatus(data) {
     : '0%';
   document.getElementById('detectionRate').textContent = rate;
 
+  /* --- Sensor values --- */
+  const formatSensor = (value, suffix = '') => {
+    if (value === null || value === undefined || Number.isNaN(Number(value))) {
+      return '—';
+    }
+    return `${value}${suffix}`;
+  };
+
+  document.getElementById('rainValue').textContent = formatSensor(data.rain);
+  document.getElementById('soilValue').textContent = formatSensor(data.soil);
+  document.getElementById('tempValue').textContent = formatSensor(data.temperature, '°C');
+  document.getElementById('humValue').textContent = formatSensor(data.humidity, '%');
+
   /* --- Last updated --- */
   document.getElementById('lastUpdated').textContent = data.last_updated || '—';
 

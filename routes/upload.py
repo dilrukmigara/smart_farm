@@ -32,27 +32,34 @@ def upload():
     raw = request.data
 
     if not raw:
-        return "No data",400
+        return "No data", 400
 
-    nparr=np.frombuffer(
+    nparr = np.frombuffer(
         raw,
         np.uint8
     )
 
-    frame=cv2.imdecode(
+    frame = cv2.imdecode(
         nparr,
         cv2.IMREAD_COLOR
     )
 
     if frame is None:
-        return "Image decode failed",400
+        return "Image decode failed", 400
 
+    # ============================================
+    # Rotate image 180 degrees (Upside Down Fix)
+    # ============================================
+    frame = cv2.rotate(
+        frame,
+        cv2.ROTATE_180
+    )
 
-    filename=datetime.now().strftime(
+    filename = datetime.now().strftime(
         "%Y%m%d_%H%M%S"
     )
 
-    original_path=(
+    original_path = (
         f"{Config.SAVE_FOLDER}/{filename}.jpg"
     )
 
@@ -61,11 +68,9 @@ def upload():
         frame
     )
 
+    annotated, person = detect_humans(frame)
 
-    annotated,person=detect_humans(frame)
-
-
-    result_path=(
+    result_path = (
         f"{Config.RESULT_FOLDER}/{filename}.jpg"
     )
 
@@ -74,13 +79,11 @@ def upload():
         annotated
     )
 
-
     state.update(
         original_path,
         result_path,
         person
     )
-
 
     if person:
 
@@ -88,30 +91,25 @@ def upload():
             result_path
         )
 
-
-    return "ok",200
-
+    return "ok", 200
 
 
 # ============================================
 # Motion endpoint
 # ESP32 PIR eka mekata POST karanawa
 # ============================================
-# ============================================
-# Motion endpoint
-# ============================================
-@upload_bp.route("/motion", methods=["GET","POST"])
+@upload_bp.route("/motion", methods=["GET", "POST"])
 def motion():
 
     # GET request support
-    if request.method=="GET":
+    if request.method == "GET":
 
-        sensor=request.args.get(
+        sensor = request.args.get(
             "sensor",
             "ESP32"
         )
 
-        details=(
+        details = (
             f"Motion from {sensor}"
         )
 
@@ -124,31 +122,29 @@ def motion():
             f"🚨 *MOTION DETECTED* 🚨\n\n{details}"
         )
 
-        state.motion_trigger=True
+        state.motion_trigger = True
 
         print("Motion ON")
 
-        return "OK",200
-
+        return "OK", 200
 
     # POST JSON support
-    data=request.get_json(
+    data = request.get_json(
         silent=True
     )
 
     if data is None:
 
         return jsonify({
-            "error":"invalid json"
-        }),400
+            "error": "invalid json"
+        }), 400
 
-
-    source=data.get(
+    source = data.get(
         "source",
         "ESP32"
     )
 
-    details=(
+    details = (
         f"Motion event from {source}"
     )
 
@@ -161,11 +157,12 @@ def motion():
         f"🚨 *MOTION DETECTED* 🚨\n\n{details}"
     )
 
-    state.motion_trigger=True
+    state.motion_trigger = True
 
     print("Motion ON")
 
-    return "OK",200
+    return "OK", 200
+
 
 # ============================================
 # ESP32 CAM checks this
@@ -174,19 +171,18 @@ def motion():
 def check():
 
     print(
-      "ESP asked:",
-      state.motion_trigger
+        "ESP asked:",
+        state.motion_trigger
     )
 
     if state.motion_trigger:
 
-        state.motion_trigger=False
+        state.motion_trigger = False
 
         print(
-          "YES sent"
+            "YES sent"
         )
 
-        return "YES",200
+        return "YES", 200
 
-
-    return "NO",200
+    return "NO", 200

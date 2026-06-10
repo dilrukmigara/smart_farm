@@ -15,3 +15,7 @@ class Config:
     # Create folders on startup
     os.makedirs(SAVE_FOLDER, exist_ok=True)
     os.makedirs(RESULT_FOLDER, exist_ok=True)
+
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///smartfarm.db'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+

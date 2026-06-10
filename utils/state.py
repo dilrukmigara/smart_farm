@@ -16,6 +16,10 @@ class DetectionState:
         self.detection_count = 0
         self.total_frames = 0
         self.last_alert_time = None
+        self.rain = None
+        self.soil = None
+        self.temperature = None
+        self.humidity = None
 
     def update(self, original, result, person):
         self.original = original
@@ -37,6 +41,13 @@ class DetectionState:
         self.status = f"🚨 Motion detected by {source}"
         self.last_updated = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+    def update_sensors(self, rain, soil, temperature, humidity):
+        self.rain = rain
+        self.soil = soil
+        self.temperature = temperature
+        self.humidity = humidity
+        self.last_updated = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
     def to_dict(self):
         return {
             "original": self.original,
@@ -49,6 +60,10 @@ class DetectionState:
             "last_updated": self.last_updated,
             "detection_count": self.detection_count,
             "total_frames": self.total_frames,
+            "rain": self.rain,
+            "soil": self.soil,
+            "temperature": self.temperature,
+            "humidity": self.humidity,
         }
 
 # Global singleton
